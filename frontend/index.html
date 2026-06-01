@@ -1,18 +1,195 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Home</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UserFlow — Gestão de Usuários</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <nav class="navegacao">
-            <h1 class="titulo">Home</h1>
-            <a href="cadastrar.html" class="button">Cadastrar</a>
-            <a href="usuarios.html" class="button">Usuarios</a>
-        </nav>
+<script src="script.js" defer></script>
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">UserFlow<span>// v1.0</span></div>
+    <div class="nav-links">
+      <a href="#cadastro">+ Cadastrar</a>
+      <a href="#usuarios">Usuários</a>
+      <a href="https://github.com/PedroJona00/Sistema-de-Gestao-de-Usuarios" target="_blank">GitHub</a>
     </div>
+  </nav>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div>
+        <div class="hero-badge" id="status-badge">Sistema ...</div>
+        <h1>Gestão de<br><em>Usuários</em><br>CRUD</h1>
+        <p>Aplicação fullstack para cadastro, listagem, edição e remoção de usuários. Node.js + Express + MySQL com frontend em JavaScript puro.</p>
+        <div class="hero-actions">
+          <a href="#cadastro" class="btn btn-primary">+ Novo usuário</a>
+          <a href="#usuarios" class="btn btn-ghost">Ver lista</a>
+        </div>
+      </div>
+
+      <!-- Terminal Card -->
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+          <span class="terminal-title">server.js — node backend</span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="t-prompt">$ </span><span class="t-cmd">node backend/server.js</span></div>
+          <div><span class="t-ok">✓ Conectado ao MySQL</span></div>
+          <div><span class="t-info">→ Servidor na porta 3000</span></div>
+          <div><span class="t-comment">// Aguardando requisições...</span></div>
+          <br>
+          <div><span class="t-prompt">GET </span><span class="t-cmd">/usuario</span> <span class="t-ok">200</span></div>
+          <div><span class="t-prompt">POST </span><span class="t-cmd">/usuario/cadastrar</span> <span class="t-ok">201</span></div>
+          <div><span class="t-prompt">PUT </span><span class="t-cmd">/usuario/editar/4</span> <span class="t-ok">200</span></div>
+          <div><span class="t-prompt">DELETE </span><span class="t-cmd">/usuario/deletar/2</span> <span class="t-ok">200</span></div>
+          <br>
+          <span class="t-cursor"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Usuários</div>
+        <div class="stat-value" id="count-users">—</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Endpoints</div>
+        <div class="stat-value blue">4</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Porta API</div>
+        <div class="stat-value yellow">3000</div>
+      </div>
+      <div class="stat" id="status-api">
+        <div class="stat-label">Status</div>
+        <p class="stat-value" id="status-txt">—</p>
+      </div>
+    </div>
+
+    <!-- NAVEGAÇÃO CARDS -->
+    <div class="section-title">Ações disponíveis</div>
+    <div class="cards">
+      <a href="#cadastro" class="card">
+        <div class="card-icon">✚</div>
+        <h3>Cadastrar usuário</h3>
+        <p>Adicione um novo registro ao banco de dados preenchendo nome, senha e e-mail.</p>
+        <div class="card-link">Ir para cadastro</div>
+      </a>
+      <a href="#usuarios" class="card">
+        <div class="card-icon">◫</div>
+        <h3>Listar usuários</h3>
+        <p>Visualize todos os usuários cadastrados com opções de editar e excluir cada um.</p>
+        <div class="card-link">Ver lista completa</div>
+      </a>
+      <a href="https://github.com/PedroJona00/Sistema-de-Gestao-de-Usuarios" class="card" target="_blank">
+        <div class="card-icon">⌥</div>
+        <h3>Código-fonte</h3>
+        <p>Acesse o repositório no GitHub para ver o código, estrutura e documentação do projeto.</p>
+        <div class="card-link">GitHub →</div>
+      </a>
+    </div>
+
+    <!-- FORM SECTION -->
+    <div class="section-title" id="cadastro">Cadastrar usuário</div>
+    <div class="form-section">
+      <div class="form-card">
+        <div class="form-card-header">POST /usuarios — novo registro</div>
+        <div class="form-card-body">
+          <div class="input-group">
+            <label>Nome</label>
+            <input type="text" id="inp-nome" placeholder="ex: Pedro Jonas" />
+          </div>
+          <div class="input-group">
+            <label>Senha</label>
+            <input type="password" id="inp-senha" placeholder="••••••••" />
+          </div>
+          <div class="input-group">
+            <label>E-mail</label>
+            <input type="email" id="inp-email" placeholder="ex: pedro@email.com" />
+          </div>
+          <button class="btn btn-primary" onclick="cadastrarUsuario()" style="width:100%;justify-content:center;margin-top:0.5rem">
+            + Registrar usuário
+          </button>
+          <div id="msg-cadastro" style="margin-top:0.75rem;font-family:var(--mono);font-size:0.75rem;color:var(--accent);display:none">
+            ✓ Usuário cadastrado com sucesso!
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-header">// Como usar o sistema</div>
+        <div class="form-card-body" style="font-family:var(--mono);font-size:0.78rem;line-height:2;color:var(--text-subtle)">
+          <div><span style="color:var(--accent)">1.</span> Inicie o servidor: <span style="color:var(--text)">node backend/server.js</span></div>
+          <div><span style="color:var(--accent)">2.</span> Abra o <span style="color:var(--text)">index.html</span> no navegador</div>
+          <div><span style="color:var(--accent)">3.</span> Preencha o formulário ao lado</div>
+          <div><span style="color:var(--accent)">4.</span> Clique em <span style="color:var(--text)">Registrar usuário</span></div>
+          <div><span style="color:var(--accent)">5.</span> Veja a lista atualizada abaixo</div>
+          <br>
+          <div style="color:var(--text-muted)">// editar → clique em "Editar" no card</div>
+          <div style="color:var(--text-muted)">// deletar → clique em "Deletar" no card</div>
+          <br>
+          <div style="color:var(--warning)">⚠ Lembre de ajustar a senha do</div>
+          <div style="color:var(--warning)">  MySQL em backend/server.js</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USER LIST -->
+    <div class="section-title" id="usuarios">Usuários cadastrados</div>
+    <div class="user-list" id="user-list">
+      <div class="user-list-header">
+        <span>ID</span>
+        <span>Nome</span>
+        <span>E-mail</span>
+        <span>Senha</span>
+        <span>Ações</span>
+      </div>
+      <!-- Linhas geradas via JS -->
+      <div id="user-rows">
+        <!-- Demo rows -->
+        <div class="user-row">
+          <span class="user-id">#---</span>
+          <span class="user-name">---</span>
+          <span class="user-email">---</span>
+          <span class="user-pwd">---</span>
+          <div class="user-actions">
+            <button class="btn btn-ghost btn-sm">Editar</button>
+            <button class="btn btn-danger btn-sm">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STACK -->
+    <div class="stack">
+      <span class="tag">Node.js</span>
+      <span class="tag">Express</span>
+      <span class="tag">MySQL</span>
+      <span class="tag">HTML5</span>
+      <span class="tag">CSS3</span>
+      <span class="tag">JavaScript ES6+</span>
+      <span class="tag">REST API</span>
+      <span class="tag">CORS</span>
+      <span class="tag">mysql2</span>
+    </div>
+
+  </main>
+
+  <footer>
+    feito por <a href="https://github.com/PedroJona00">PedroJona00</a> &nbsp;·&nbsp;
+    Node.js + Express + MySQL &nbsp;·&nbsp;
+    <a href="https://github.com/PedroJona00/Sistema-de-Gestao-de-Usuarios">github</a>
+  </footer>
 </body>
 </html>

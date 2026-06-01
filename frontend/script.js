@@ -1,119 +1,114 @@
-const page = window.location.href.split('/').pop();
-if (page === 'usuarios.html') {
-    fetch("http://localhost:3000/usuario")
-        .then(res => res.json())
-        .then(lista => {
-            const info = document.getElementById("usuarioList");
-            info.innerHTML = lista.length > 0 ? lista.map(x => {
-                const idAtual = x.id ?? x.id_usuario;
-                return`
-                <div class="usuarioInfo">
-                    <strong>ID:</strong> <span>${x.id ?? x.id_usuario}</span><br>
-                    <strong>Nome:</strong> <span>${x.nome_usuario ?? x.nome}</span><br>
-                    <strong>Senha:</strong> <span>${x.senha_usuario ?? x.senha}</span><br>
-                    <strong>Email:</strong> <span>${x.email_usuario ?? x.email}</span><br>
-                    <button class="button" onclick="deletarUsuario(${idAtual})">Deletar Usuário</button>
-                    <button class="button" onclick="editarUsuario(${idAtual})">Editar Usuário</button>
-                </div>`
-            }).join('') : "Nenhum usuario encontrado!";
-        })
-        .catch(err => alert('Erro ao buscar usuário: ' + err.message));
-};
+// ── Simula ping à API para mostrar status ──
+async function checkApi() {
+  const statusEl = document.getElementById("status-txt");
+  const countEl = document.getElementById("count-users");
+  const badgeEl = document.getElementById("status-badge");
+  try {
+    const result = await fetch("http://localhost:3000/usuario", {
+      signal: AbortSignal.timeout(2000),
+    });
+    if (result.ok) {
+        const data = await result.json();
+        statusEl.textContent = "Online";
+        badgeEl.textContent = "Sistema online";
+        statusEl.style.color = "var(--accent)";
+        badgeEl.style.color = "var(--accent)";
+        countEl.textContent = data.length;
+        renderRows(data);
+    } 
+  } catch {
+    statusEl.textContent = "Offline";
+    badgeEl.textContent = "Sistema offline";
+    badgeEl.className = "hero-badge red";
+    statusEl.className = "stat-value red";
+    countEl.textContent = "—";
+  }
+}
+
+function renderRows(users) {
+  const container = document.getElementById("user-rows");
+  console.log("Renderizando usuários:", users);
+  if (!users.length) {
+    container.innerHTML = `<div style="padding:2rem 1.5rem;font-family:var(--mono);font-size:0.8rem;color:var(--text-muted)">// Nenhum usuário cadastrado.</div>`;
+    return;
+  }
+  container.innerHTML = users
+    .map(
+      (u) => `
+        <div class="user-row">
+          <span class="user-id">#${u.id ?? u.id_usuario}</span>
+          <span class="user-name">${u.nome ?? u.nome_usuario}</span>
+          <span class="user-email">${u.email ?? u.email_usuario}</span>
+          <span class="user-pwd">••••••••</span>
+          <div class="user-actions">
+            <button class="btn btn-ghost btn-sm" onclick="editarUsuario(${u.id ?? u.id_usuario})">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="deletarUsuario(${u.id ?? u.id_usuario})">✕</button>
+          </div>
+        </div>
+      `,
+    )
+    .join("");
+}
+
+async function cadastrarUsuario() {
+  const nome = document.getElementById("inp-nome").value.trim();
+  const senha = document.getElementById("inp-senha").value.trim();
+  const email = document.getElementById("inp-email").value.trim();
+  if (!nome || !senha || !email) return alert("Preencha todos os campos.");
+  try {
+    const result = await fetch("http://localhost:3000/usuario/cadastrar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nome_usuario: nome, senha_usuario: senha, email_usuario: email }),
+    });
+    if (result.ok) {
+      document.getElementById("inp-nome").value = "";
+      document.getElementById("inp-senha").value = "";
+      document.getElementById("inp-email").value = "";
+      const msg = document.getElementById("msg-cadastro");
+      msg.style.display = "block";
+      setTimeout(() => (msg.style.display = "none"), 3000);
+      checkApi();
+    }
+  } catch {
+    alert(
+      "Não foi possível conectar ao servidor. Verifique se o backend está rodando.",
+    );
+  }
+}
 
 async function deletarUsuario(id) {
-    if (!confirm(`Tem certeza que deseja excluir o usuário com ID: ${id}?`)) {
-        return;
-    }
-
-    try {
-        const resposta = await fetch(`http://localhost:3000/usuario/${id}`, {
-            method: 'DELETE'
-        });
-
-        if (resposta.ok) {
-            alert(`Usuário com ID ${id} excluído com sucesso!`);
-            location.reload();
-        } else {
-            const erro = await resposta.json();
-            alert(`Falha: ${erro.message}`);
-        }
-    } catch (error) {
-        alert('Erro de rede ou na API: ' + error.message);
-    }
+  if (!confirm(`Tem certeza que deseja excluir o usuário #${id}?`)) return;
+  try {
+    const result = await fetch(`http://localhost:3000/usuario/deletar/${id}`, {
+      method: "DELETE",
+    });
+    checkApi();
+  } catch {
+    alert("Erro ao conectar ao servidor.");
+  }
 }
 
 async function editarUsuario(id) {
-    let escolha = prompt(`Oq você quer alterar: 
-        1 = Nome de usuário 
-        2 = Senha 
-        3 = Email`);
-        if (escolha === null || escolha === '') return;
-
-        let coluna, novoValor;
-
-        if (escolha == 1) {
-            coluna = 'nome_usuario';
-            novoValor = prompt("Digite o novo nome de usuário.");
-            if (novoValor === null || novoValor === '') return;
-        }
-        else if (escolha == 2) {
-            coluna = 'senha_usuario';
-            novoValor = prompt("Digite a nova senha do usuário.");
-            if (novoValor === null || novoValor === '') return;
-        }
-        else if (escolha == 3) {
-            coluna = 'email_usuario';
-            novoValor = prompt("Digite o novo email do usuário.");
-            if (novoValor === null || novoValor === '') return;
-        }
-        else {
-            alert('Opção inválida!');
-            return;
-        }
-            try {
-            const response = await fetch(`http://localhost:3000/usuario/editar/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ [coluna]: novoValor })
-            });
-
-            if (response.ok) {
-                alert('Usuário atualizado com sucesso!');
-                location.reload();
-            } else {
-                alert('Erro ao atualizar usuário.');
-            }
-        }
-        catch (error) {
-            console.error('Erro ao editar item:', error);
-            alert('Erro ao editar item');
-        }
-    }
-
-if (page === 'cadastrar.html') {
-    document.getElementById('registroForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        const formData = new FormData(this);
-        const data = Object.fromEntries(formData.entries());
-
-        try {
-            const response = await fetch('http://localhost:3000/cadastrar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            const result = await response.json();
-            if (response.ok) {
-                alert(result.message);
-                this.reset();
-            }
-        }
-        catch (error) {
-            alert("Erro ao cadastrar o usuário: " + error.message);
-        }
+  const campo = prompt(
+    "O que deseja alterar?\n1 - Nome\n2 - Senha\n3 - E-mail",
+  );
+  const mapa = { 1: "nome_usuario", 2: "senha_usuario", 3: "email_usuario" };
+  const key = mapa[campo];
+  if (!key) return;
+  const valor = prompt(`Novo valor para ${key}:`);
+  if (!valor) return;
+  try {
+    const result = await fetch(`http://localhost:3000/usuario/editar/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ [key]: valor }),
     });
+    checkApi();
+  } catch {
+    alert("Erro ao conectar ao servidor.");
+  }
 }
 
+// Inicia
+checkApi();

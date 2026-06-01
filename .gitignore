@@ -1,0 +1,21 @@
+# --- Dependências (o mais importante!) ---
+node_modules/
+
+# --- Arquivos de Ambiente (Segurança) ---
+.env
+.env.local
+
+# --- Pastas de Build ou Executáveis ---
+dist/
+build/
+out/
+
+# --- Arquivos de Sistema e IDE ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# --- Logs ---
+*.log
+npm-debug.log*

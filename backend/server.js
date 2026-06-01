@@ -9,12 +9,12 @@ app.use(express.json())
 
 const db = mysql.createConnection({
     host: "localhost",
-    user:"root",
-    password:"12345",
+    user:"SEU_USUÁRIO",
+    password:"SUA_SENHA",
     database:"db_registro"
 })
 
-app.post('/cadastrar', (req, res) => {
+app.post('/usuario/cadastrar', (req, res) => {
     const { nome_usuario, senha_usuario, email_usuario } = req.body;
     console.log('Usuário:',nome_usuario, 'Email:',email_usuario);
 
@@ -30,10 +30,10 @@ app.get('/usuario', (req, res) => {
     db.query('SELECT * FROM tb_usuario', (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(results);
-  });
+    });
 });
 
-app.delete('/usuario/:id', (req, res) => {
+app.delete('/usuario/deletar/:id', (req, res) => {
     db.query('DELETE FROM tb_usuario WHERE id_usuario = ?', [req.params.id], (err, result) => {
         if (err) return res.status(500).json({ message: 'Erro ao deletar usuário: ' + err.message });
         if (result.affectedRows === 0) return res.status(404).json({ message: 'Usuário não encontrado' });
@@ -71,5 +71,5 @@ app.put('/usuario/editar/:id', (req, res) => {
 });
 
 app.listen(3000, () => {
-    console.log("Servidor rodando na porta 3000🎂");
+    console.log("🌐💻 Servidor rodando na porta 3000 🌐💻");
 })
