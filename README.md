@@ -16,21 +16,6 @@ Construída com Node.js, Express e MySQL, com frontend em HTML/CSS/JS.
 
 ---
 
-##  Índice
-
-- [Sobre o Projeto](#-sobre-o-projeto)
-- [Funcionalidades](#-funcionalidades)
-- [Arquitetura](#-arquitetura)
-- [Tecnologias](#-tecnologias)
-- [Pré-requisitos](#-pré-requisitos)
-- [Instalação e Uso](#-instalação-e-uso)
-- [Estrutura de Pastas](#-estrutura-de-pastas)
-- [Endpoints da API](#-endpoints-da-api)
-- [Banco de Dados](#-banco-de-dados)
-- [Melhorias Futuras](#-melhorias-futuras)
-
----
-
 ##  Sobre o Projeto
 
 O **UserFlow** é uma aplicação fullstack que implementa as quatro operações fundamentais de persistência de dados (**CRUD**):
